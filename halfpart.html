@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Explorer - Profile & Launch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .galaxy-bg {
+            background: linear-gradient(135deg, #0c0c1e 0%, #1a1a3e 25%, #2d1b69 50%, #1e0a3e 75%, #0f0f23 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .galaxy-bg::before {
+            content: '';
+            position: fixed;
+            top: -20%;
+            left: -20%;
+            width: 140%;
+            height: 140%;
+            background: linear-gradient(135deg, #0c0c1e 0%, #1a1a3e 25%, #2d1b69 50%, #1e0a3e 75%, #0f0f23 100%);
+            animation: zoomIn 20s ease-in-out infinite;
+            z-index: -1;
+        }
+        
+        @keyframes zoomIn {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+        
+        .star:nth-child(odd) {
+            animation-delay: 1s;
+        }
+        
+        .star:nth-child(3n) {
+            animation-delay: 2s;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        .shooting-star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: linear-gradient(45deg, #fff, #87ceeb);
+            border-radius: 50%;
+            animation: shoot 4s linear infinite;
+        }
+        
+        @keyframes shoot {
+            0% {
+                transform: translateX(-100px) translateY(100px);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(100vw) translateY(-100px);
+                opacity: 0;
+            }
+        }
+        
+        .nebula {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(40px);
+            animation: float 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .planet {
+            position: fixed;
+            border-radius: 50%;
+            animation: planetOrbit 25s linear infinite;
+            pointer-events: none;
+            transition: all 0.5s ease;
+        }
+        
+        @keyframes planetOrbit {
+            0% { transform: rotate(0deg) translateX(100px) rotate(0deg) scale(1); }
+            25% { transform: rotate(90deg) translateX(120px) rotate(-90deg) scale(1.1); }
+            50% { transform: rotate(180deg) translateX(140px) rotate(-180deg) scale(1.2); }
+            75% { transform: rotate(270deg) translateX(120px) rotate(-270deg) scale(1.1); }
+            100% { transform: rotate(360deg) translateX(100px) rotate(-360deg) scale(1); }
+        }
+        
+        .mars {
+            background: radial-gradient(circle at 30% 30%, #ff6b47, #cc4125, #8b2914);
+            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.3), 0 0 30px rgba(255,107,71,0.3);
+        }
+        
+        .jupiter {
+            background: radial-gradient(circle at 30% 30%, #d8ca9d, #b8860b, #8b7355);
+            box-shadow: inset -15px -15px 30px rgba(0,0,0,0.3), 0 0 40px rgba(216,202,157,0.3);
+        }
+        
+        .saturn {
+            background: radial-gradient(circle at 30% 30%, #fad5a5, #deb887, #cd853f);
+            box-shadow: inset -12px -12px 25px rgba(0,0,0,0.3), 0 0 35px rgba(250,213,165,0.3);
+        }
+        
+        .saturn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, rgba(250,213,165,0.6), transparent);
+            border-radius: 50%;
+        }
+        
+        .neptune {
+            background: radial-gradient(circle at 30% 30%, #4169e1, #1e3a8a, #1e40af);
+            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.3), 0 0 30px rgba(65,105,225,0.3);
+        }
+        
+        .venus {
+            background: radial-gradient(circle at 30% 30%, #ffc649, #ff8c00, #ff6347);
+            box-shadow: inset -8px -8px 15px rgba(0,0,0,0.3), 0 0 25px rgba(255,198,73,0.3);
+        }
+        
+        .rocket {
+            position: fixed;
+            width: 60px;
+            height: 120px;
+            z-index: 50;
+            animation: rocketFlight 6s linear infinite;
+        }
+        
+        @keyframes rocketFlight {
+            0% {
+                left: -80px;
+                bottom: 10px;
+                transform: rotate(45deg);
+            }
+            50% {
+                left: 50%;
+                bottom: 50%;
+                transform: rotate(45deg);
+            }
+            100% {
+                left: calc(100% + 80px);
+                bottom: 90%;
+                transform: rotate(45deg);
+            }
+        }
+        
+        .rocket-flame {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 30px;
+            background: linear-gradient(180deg, #ff6b35 0%, #f7931e 50%, #ffff00 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flameFlicker 0.3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes flameFlicker {
+            0% {
+                height: 25px;
+                opacity: 0.8;
+            }
+            100% {
+                height: 35px;
+                opacity: 1;
+            }
+        }
+        
+        .launch-panel {
+            animation: panelGlow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes panelGlow {
+            0% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+            100% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.6), 0 0 60px rgba(147, 51, 234, 0.3); }
+        }
+        
+        .launch-button {
+            animation: buttonPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes buttonPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .slide-transition {
+            transition: all 1s ease-in-out;
+        }
+        
+        .fade-out {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        
+        .fade-in {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        /* Space Weather Animations */
+        .sun-rays {
+            animation: rotate 8s linear infinite;
+        }
+        
+        .ray {
+            position: absolute;
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(to bottom, #fbbf24, #f59e0b);
+            border-radius: 2px;
+            transform-origin: center bottom;
+        }
+        
+        .ray-1 { top: -20px; left: 50%; transform: translateX(-50%) rotate(0deg); }
+        .ray-2 { top: -14px; right: -14px; transform: rotate(45deg); }
+        .ray-3 { top: 50%; right: -20px; transform: translateY(-50%) rotate(90deg); }
+        .ray-4 { bottom: -14px; right: -14px; transform: rotate(135deg); }
+        .ray-5 { bottom: -20px; left: 50%; transform: translateX(-50%) rotate(180deg); }
+        .ray-6 { bottom: -14px; left: -14px; transform: rotate(225deg); }
+        .ray-7 { top: 50%; left: -20px; transform: translateY(-50%) rotate(270deg); }
+        .ray-8 { top: -14px; left: -14px; transform: rotate(315deg); }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .solar-particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, #fbbf24, #f59e0b);
+            border-radius: 50%;
+            animation: solarWind 3s linear infinite;
+        }
+        
+        .particle-1 { top: -8px; animation-delay: 0s; }
+        .particle-2 { top: -4px; animation-delay: 0.6s; }
+        .particle-3 { top: 0px; animation-delay: 1.2s; }
+        .particle-4 { top: 4px; animation-delay: 1.8s; }
+        .particle-5 { top: 8px; animation-delay: 2.4s; }
+        
+        @keyframes solarWind {
+            0% {
+                left: 0;
+                opacity: 1;
+                transform: scale(1);
+            }
+            70% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+            100% {
+                left: 100%;
+                opacity: 0;
+                transform: scale(0.5);
+            }
+        }
+        
+        .magnetic-shield {
+            animation: shieldPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes shieldPulse {
+            0%, 100% {
+                transform: scale(1);
+                border-color: #60a5fa;
+                box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                border-color: #3b82f6;
+                box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+            }
+        }
+        
+        .aurora {
+            animation: auroraShimmer 3s ease-in-out infinite;
+        }
+        
+        @keyframes auroraShimmer {
+            0%, 100% {
+                opacity: 0.4;
+                transform: translateX(-50%) scaleX(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: translateX(-50%) scaleX(1.2);
+            }
+        }
+        
+        /* Rocket Launch Animations */
+        @keyframes rocketLaunchUp {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-100px) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-300px) scale(0.5);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes flameIgnite {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) scale(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1);
+            }
+        }
+        
+        @keyframes categoryRocketLaunch {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            30% {
+                transform: translate(-50%, -70%) scale(1.1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -200%) scale(0.3);
+                opacity: 0;
+            }
+        }
+        
+        .rocket-flame-small.ignited {
+            animation: flameIgnite 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="galaxy-bg min-h-screen py-8">
+    <!-- Animated Galaxy Elements -->
+    <div class="stars"></div>
+    
+    <!-- Floating Nebulas -->
+    <div class="nebula w-40 h-40 bg-purple-500 opacity-20 top-10 left-10"></div>
+    <div class="nebula w-32 h-32 bg-blue-400 opacity-15 top-32 right-20" style="animation-delay: -2s;"></div>
+    <div class="nebula w-48 h-48 bg-pink-400 opacity-10 bottom-20 left-32" style="animation-delay: -4s;"></div>
+    <div class="nebula w-28 h-28 bg-cyan-400 opacity-12 top-1/2 right-10" style="animation-delay: -6s;"></div>
+    
+    <!-- Orbiting Planets -->
+    <div class="planet mars w-16 h-16 top-20 left-1/4"></div>
+    <div class="planet jupiter w-24 h-24 top-40 right-1/3" style="animation-delay: -5s;"></div>
+    <div class="planet saturn w-20 h-20 bottom-32 left-1/2" style="animation-delay: -10s;"></div>
+    <div class="planet neptune w-14 h-14 top-1/3 left-10" style="animation-delay: -15s;"></div>
+    <div class="planet venus w-12 h-12 bottom-20 right-20" style="animation-delay: -20s;"></div>
+    
+    <!-- Earth -->
+    <div class="fixed bottom-10 right-10 w-28 h-28 rounded-full bg-gradient-to-br from-blue-500 via-green-500 to-blue-600 opacity-40 animate-pulse pointer-events-none"></div>
+    
+    <!-- Moon -->
+    <div class="fixed bottom-20 right-40 w-10 h-10 rounded-full bg-gray-300 opacity-50 animate-bounce pointer-events-none" style="animation-delay: -1s;"></div>
+    
+    <!-- Space Station -->
+    <div class="fixed top-1/4 left-20 w-6 h-3 opacity-70 pointer-events-none" style="animation: float 8s ease-in-out infinite; background: linear-gradient(45deg, #c0c0c0, #ffffff);"></div>
+    
+    <!-- Shooting Stars -->
+    <div class="shooting-star top-16 left-0" style="animation-delay: 0s;"></div>
+    <div class="shooting-star top-32 left-0" style="animation-delay: 2s;"></div>
+    <div class="shooting-star top-48 left-0" style="animation-delay: 3.5s;"></div>
+    <div class="shooting-star top-64 left-0" style="animation-delay: 5s;"></div>
+
+    <!-- Animated Rocket (only on profile page) -->
+    <div id="animatedRocket" class="rocket">
+        <!-- Rocket Body -->
+        <svg viewBox="0 0 60 120" class="w-full h-full">
+            <!-- Main body -->
+            <ellipse cx="30" cy="85" rx="12" ry="25" fill="#e5e7eb"/>
+            <!-- Nose cone -->
+            <path d="M18 60 L30 20 L42 60 Z" fill="#dc2626"/>
+            <!-- Fins -->
+            <path d="M18 95 L10 110 L18 105 Z" fill="#374151"/>
+            <path d="M42 95 L50 110 L42 105 Z" fill="#374151"/>
+            <!-- Window -->
+            <circle cx="30" cy="70" r="6" fill="#3b82f6" opacity="0.8"/>
+            <circle cx="30" cy="70" r="4" fill="#87ceeb" opacity="0.6"/>
+            <!-- Details -->
+            <rect x="25" y="80" width="10" height="3" fill="#6b7280"/>
+            <rect x="25" y="88" width="10" height="3" fill="#6b7280"/>
+        </svg>
+        <!-- Rocket Flame -->
+        <div class="rocket-flame"></div>
+    </div>
+
+    <!-- Profile Creation Form -->
+    <div id="profileSection" class="slide-transition max-w-md mx-auto bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 bg-opacity-90 backdrop-blur-sm rounded-xl shadow-2xl p-8 relative z-10 border border-blue-400 border-opacity-30">
+        <!-- Earth in background -->
+        <div class="absolute -top-4 -right-4 w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 via-green-400 to-blue-600 opacity-20 animate-pulse"></div>
+        
+        <!-- Satellite orbit -->
+        <div class="absolute top-8 right-8 w-2 h-2 bg-gray-300 rounded-full animate-ping"></div>
+        
+        <!-- Space station -->
+        <div class="absolute bottom-4 left-4 w-3 h-3 bg-yellow-400 rounded-sm opacity-60" style="animation: float 6s ease-in-out infinite;"></div>
+        
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+            </div>
+            <h1 class="text-2xl font-bold text-white">Create Your Profile</h1>
+            <p class="text-blue-200 mt-2">Join our cosmic community today</p>
+        </div>
+
+        <form id="registrationForm" class="space-y-6">
+            <div>
+                <label for="fullName" class="block text-sm font-medium text-blue-200 mb-2">Full Name</label>
+                <input type="text" id="fullName" name="fullName" required
+                    class="w-full px-4 py-3 bg-white bg-opacity-90 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-colors"
+                    placeholder="Enter your full name">
+            </div>
+
+            <div>
+                <label for="age" class="block text-sm font-medium text-blue-200 mb-2">Age</label>
+                <input type="number" id="age" name="age" required
+                    class="w-full px-4 py-3 bg-white bg-opacity-90 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-colors"
+                    placeholder="Enter your age">
+            </div>
+
+            <div class="flex items-center">
+                <input type="checkbox" id="terms" name="terms" required
+                    class="w-4 h-4 text-blue-400 border-blue-300 rounded focus:ring-blue-400">
+                <label for="terms" class="ml-3 text-sm text-blue-200">
+                    I agree to the <a href="#" class="text-blue-300 hover:text-blue-200 font-medium">Terms of Service</a> and <a href="#" class="text-blue-300 hover:text-blue-200 font-medium">Privacy Policy</a>
+                </label>
+            </div>
+
+            <button type="submit"
+                class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-300 shadow-lg">
+                🚀 Create Profile
+            </button>
+        </form>
+
+        <!-- Success Message (hidden by default) -->
+        <div id="successMessage" class="hidden mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <p class="text-green-800 font-medium">Profile created successfully! Launching Mission Control...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Space Weather Education Slide (hidden by default) -->
+    <div id="spaceWeatherSection" class="hidden slide-transition">
+        <div class="max-w-4xl mx-auto bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 bg-opacity-90 backdrop-blur-sm rounded-xl shadow-2xl p-8 relative z-10 border border-blue-400 border-opacity-30">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-white mb-3">🌟 Space Weather Adventure! 🌍</h1>
+                <p class="text-blue-200 text-lg">Learn how our Sun affects Earth!</p>
+            </div>
+            
+            <!-- Space Weather Animation Container -->
+            <div class="relative bg-black bg-opacity-30 rounded-xl p-8 mb-6 overflow-hidden" style="height: 400px;">
+                <!-- Animated Sun -->
+                <div class="absolute left-8 top-1/2 transform -translate-y-1/2">
+                    <div class="sun-face w-24 h-24 bg-yellow-400 rounded-full relative animate-pulse">
+                        <!-- Sun's face -->
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="text-4xl">😊</div>
+                        </div>
+                        <!-- Sun rays -->
+                        <div class="sun-rays absolute inset-0">
+                            <div class="ray ray-1"></div>
+                            <div class="ray ray-2"></div>
+                            <div class="ray ray-3"></div>
+                            <div class="ray ray-4"></div>
+                            <div class="ray ray-5"></div>
+                            <div class="ray ray-6"></div>
+                            <div class="ray ray-7"></div>
+                            <div class="ray ray-8"></div>
+                        </div>
+                    </div>
+                    <!-- Solar Flares -->
+                    <div class="solar-flare absolute top-2 left-20 w-8 h-2 bg-orange-400 rounded-full animate-ping"></div>
+                    <div class="solar-flare absolute bottom-2 left-20 w-6 h-2 bg-red-400 rounded-full animate-ping" style="animation-delay: 0.5s;"></div>
+                </div>
+                
+                <!-- Solar Wind Particles -->
+                <div class="solar-wind-container absolute left-32 top-1/2 transform -translate-y-1/2 w-64 h-2">
+                    <div class="solar-particle particle-1"></div>
+                    <div class="solar-particle particle-2"></div>
+                    <div class="solar-particle particle-3"></div>
+                    <div class="solar-particle particle-4"></div>
+                    <div class="solar-particle particle-5"></div>
+                </div>
+                
+                <!-- Earth with Magnetic Shield -->
+                <div class="absolute right-16 top-1/2 transform -translate-y-1/2">
+                    <!-- Magnetic Shield -->
+                    <div class="magnetic-shield w-32 h-32 border-4 border-blue-400 rounded-full animate-pulse opacity-60"></div>
+                    <!-- Earth -->
+                    <div class="earth-face absolute inset-4 w-24 h-24 bg-gradient-to-br from-blue-500 via-green-500 to-blue-600 rounded-full flex items-center justify-center">
+                        <div class="text-2xl">😮</div>
+                    </div>
+                    <!-- Auroras -->
+                    <div class="aurora aurora-north absolute -top-2 left-1/2 transform -translate-x-1/2 w-16 h-8 bg-gradient-to-r from-green-400 to-purple-500 rounded-full opacity-70 animate-bounce"></div>
+                    <div class="aurora aurora-south absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-16 h-8 bg-gradient-to-r from-purple-400 to-green-500 rounded-full opacity-70 animate-bounce" style="animation-delay: 0.3s;"></div>
+                </div>
+                
+                <!-- Interactive Labels -->
+                <button onclick="showInfo('solarFlares')" class="absolute left-4 top-4 bg-yellow-100 hover:bg-yellow-200 px-3 py-1 rounded-full text-sm font-bold text-yellow-800 animate-bounce cursor-pointer transition-colors">
+                    ☀️ Solar Flares
+                </button>
+                <button onclick="showInfo('solarWind')" class="absolute left-1/2 top-8 transform -translate-x-1/2 bg-orange-100 hover:bg-orange-200 px-3 py-1 rounded-full text-sm font-bold text-orange-800 animate-bounce cursor-pointer transition-colors" style="animation-delay: 0.5s;">
+                    💨 Solar Wind
+                </button>
+                <button onclick="showInfo('magneticShield')" class="absolute right-4 top-4 bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded-full text-sm font-bold text-blue-800 animate-bounce cursor-pointer transition-colors" style="animation-delay: 1s;">
+                    🛡️ Magnetic Shield
+                </button>
+                <button onclick="showInfo('auroras')" class="absolute right-4 bottom-4 bg-green-100 hover:bg-green-200 px-3 py-1 rounded-full text-sm font-bold text-green-800 animate-bounce cursor-pointer transition-colors" style="animation-delay: 1.5s;">
+                    ✨ Auroras
+                </button>
+                
+                <!-- Rocket Launch Button -->
+                <button onclick="launchToCategories()" class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-100 hover:bg-red-200 px-4 py-3 rounded-full text-sm font-bold text-red-800 cursor-pointer transition-all duration-300 hover:scale-110 group shadow-lg border-2 border-red-300">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-lg">🚀</span>
+                        <span class="text-sm">Get Started</span>
+                    </div>
+                </button>
+            </div>
+            
+            <!-- Educational Content -->
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                    <h3 class="text-lg font-bold text-yellow-800 mb-2">☀️ What is Space Weather?</h3>
+                    <p class="text-yellow-700 text-sm">Space weather happens when our Sun sends out energy and particles into space. Just like Earth has weather with rain and wind, space has weather too!</p>
+                </div>
+                <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                    <h3 class="text-lg font-bold text-blue-800 mb-2">🛡️ Earth's Protection</h3>
+                    <p class="text-blue-700 text-sm">Earth has an invisible magnetic shield that protects us from most space weather. It's like a superhero force field around our planet!</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                    <h3 class="text-lg font-bold text-green-800 mb-2">✨ Beautiful Auroras</h3>
+                    <p class="text-green-700 text-sm">When some particles do get through, they create beautiful lights in the sky called auroras - like nature's own light show!</p>
+                </div>
+                <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
+                    <h3 class="text-lg font-bold text-purple-800 mb-2">🚀 Why It Matters</h3>
+                    <p class="text-purple-700 text-sm">Understanding space weather helps protect astronauts and satellites in space, just like weather forecasts help us on Earth!</p>
+                </div>
+            </div>
+            
+            <!-- Information Popup (hidden by default) -->
+            <div id="infoPopup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div class="bg-white rounded-xl p-6 max-w-md mx-4 shadow-2xl transform transition-all duration-300 scale-95">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 id="infoTitle" class="text-xl font-bold text-gray-800"></h3>
+                        <button onclick="closeInfo()" class="text-gray-500 hover:text-gray-700 text-2xl font-bold">×</button>
+                    </div>
+                    <div id="infoContent" class="text-gray-700 mb-4"></div>
+                    <div id="infoFacts" class="bg-blue-50 p-3 rounded-lg mb-4"></div>
+                    <button onclick="closeInfo()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                        Got it! 👍
+                    </button>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between items-center">
+                <button onclick="goBackToMissionControl()" 
+                    class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    ← Back to Mission Control
+                </button>
+                <button onclick="continueExploration()" 
+                    class="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 shadow-lg">
+                    Continue Exploring! 🚀
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories Selection Page (hidden by default) -->
+    <div id="categoriesSection" class="hidden slide-transition">
+        <div class="max-w-6xl mx-auto bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 bg-opacity-90 backdrop-blur-sm rounded-xl shadow-2xl p-8 relative z-10 border border-blue-400 border-opacity-30">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-white mb-3">🌌 Choose Your Space Mission! 🚀</h1>
+                <p class="text-blue-200 text-lg">Select a category to explore space weather impacts</p>
+            </div>
+            
+            <!-- Categories Grid -->
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <!-- General Public -->
+                <div class="relative group">
+                    <button onclick="selectCategory('general')" class="category-btn w-full bg-gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white p-6 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                        <div class="text-4xl mb-3">👥</div>
+                        <h3 class="text-xl font-bold mb-2">General Public</h3>
+                        <p class="text-blue-100 text-sm">Learn how space weather affects everyday life on Earth</p>
+                    </button>
+                    <div class="category-rocket hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+                        <div class="w-8 h-16 relative">
+                            <svg viewBox="0 0 30 60" class="w-full h-full">
+                                <ellipse cx="15" cy="42" rx="6" ry="12" fill="#e5e7eb"/>
+                                <path d="M9 30 L15 10 L21 30 Z" fill="#dc2626"/>
+                                <path d="M9 47 L5 55 L9 52 Z" fill="#374151"/>
+                                <path d="M21 47 L25 55 L21 52 Z" fill="#374151"/>
+                                <circle cx="15" cy="35" r="3" fill="#3b82f6"/>
+                            </svg>
+                            <div class="rocket-flame-small absolute bottom-0 left-1/2 transform -translate-x-1/2 w-3 h-4 bg-gradient-to-t from-yellow-400 to-orange-500 rounded-full opacity-0"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Astronaut -->
+                <div class="relative group">
+                    <button onclick="selectCategory('astronaut')" class="category-btn w-full bg-gradient-to-br from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white p-6 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                        <div class="text-4xl mb-3">👨‍🚀</div>
+                        <h3 class="text-xl font-bold mb-2">Astronaut</h3>
+                        <p class="text-purple-100 text-sm">Discover space weather dangers for space travelers</p>
+                    </button>
+                    <div class="category-rocket hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+                        <div class="w-8 h-16 relative">
+                            <svg viewBox="0 0 30 60" class="w-full h-full">
+                                <ellipse cx="15" cy="42" rx="6" ry="12" fill="#e5e7eb"/>
+                                <path d="M9 30 L15 10 L21 30 Z" fill="#dc2626"/>
+                                <path d="M9 47 L5 55 L9 52 Z" fill="#374151"/>
+                                <path d="M21 47 L25 55 L21 52 Z" fill="#374151"/>
+                                <circle cx="15" cy="35" r="3" fill="#3b82f6"/>
+                            </svg>
+                            <div class="rocket-flame-small absolute bottom-0 left-1/2 transform -translate-x-1/2 w-3 h-4 bg-gradient-to-t from-yellow-400 to-orange-500 rounded-full opacity-0"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Farmers -->
+                <div class="relative group">
+                    <button onclick="selectCategory('farmers')" class="category-btn w-full bg-gradient-to-br from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white p-6 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                        <div class="text-4xl mb-3">👨‍🌾</div>
+                        <h3 class="text-xl font-bold mb-2">Farmers</h3>
+                        <p class="text-green-100 text-sm">Explore how space weather impacts agriculture</p>
+                    </button>
+                    <div class="category-rocket hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+                        <div class="w-8 h-16 relative">
+                            <svg viewBox="0 0 30 60" class="w-full h-full">
+                                <ellipse cx="15" cy="42" rx="6" ry="12" fill="#e5e7eb"/>
+                                <path d="M9 30 L15 10 L21 30 Z" fill="#dc2626"/>
+                                <path d="M9 47 L5 55 L9 52 Z" fill="#374151"/>
+                                <path d="M21 47 L25 55 L21 52 Z" fill="#374151"/>
+                                <circle cx="15" cy="35" r="3" fill="#3b82f6"/>
+                            </svg>
+                            <div class="rocket-flame-small absolute bottom-0 left-1/2 transform -translate-x-1/2 w-3 h-4 bg-gradient-to-t from-yellow-400 to-orange-500 rounded-full opacity-0"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sun -->
+                <div class="relative group">
+                    <button onclick="selectCategory('sun')" class="category-btn w-full bg-gradient-to-br from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white p-6 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                        <div class="text-4xl mb-3">☀️</div>
+                        <h3 class="text-xl font-bold mb-2">Sun</h3>
+                        <p class="text-yellow-100 text-sm">Learn about our star and its powerful activities</p>
+                    </button>
+                    <div class="category-rocket hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+                        <div class="w-8 h-16 relative">
+                            <svg viewBox="0 0 30 60" class="w-full h-full">
+                                <ellipse cx="15" cy="42" rx="6" ry="12" fill="#e5e7eb"/>
+                                <path d="M9 30 L15 10 L21 30 Z" fill="#dc2626"/>
+                                <path d="M9 47 L5 55 L9 52 Z" fill="#374151"/>
+                                <path d="M21 47 L25 55 L21 52 Z" fill="#374151"/>
+                                <circle cx="15" cy="35" r="3" fill="#3b82f6"/>
+                            </svg>
+                            <div class="rocket-flame-small absolute bottom-0 left-1/2 transform -translate-x-1/2 w-3 h-4 bg-gradient-to-t from-yellow-400 to-orange-500 rounded-full opacity-0"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Moon -->
+                <div class="relative group">
+                    <button onclick="selectCategory('moon')" class="category-btn w-full bg-gradient-to-br from-gray-500 to-gray-700 hover:from-gray-600 hover:to-gray-800 text-white p-6 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                        <div class="text-4xl mb-3">🌙</div>
+                        <h3 class="text-xl font-bold mb-2">Moon</h3>
+                        <p class="text-gray-100 text-sm">Discover how space weather affects our lunar neighbor</p>
+                    </button>
+                    <div class="category-rocket hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+                        <div class="w-8 h-16 relative">
+                            <svg viewBox="0 0 30 60" class="w-full h-full">
+                                <ellipse cx="15" cy="42" rx="6" ry="12" fill="#e5e7eb"/>
+                                <path d="M9 30 L15 10 L21 30 Z" fill="#dc2626"/>
+                                <path d="M9 47 L5 55 L9 52 Z" fill="#374151"/>
+                                <path d="M21 47 L25 55 L21 52 Z" fill="#374151"/>
+                                <circle cx="15" cy="35" r="3" fill="#3b82f6"/>
+                            </svg>
+                            <div class="rocket-flame-small absolute bottom-0 left-1/2 transform -translate-x-1/2 w-3 h-4 bg-gradient-to-t from-yellow-400 to-orange-500 rounded-full opacity-0"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Satellites -->
+                <div class="relative group">
+                    <button onclick="selectCategory('satellite')" class="category-btn w-full bg-gradient-to-br from-cyan-500 to-cyan-700 hover:from-cyan-600 hover:to-cyan-800 text-white p-6 rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                        <div class="text-4xl mb-3">🛰️</div>
+                        <h3 class="text-xl font-bold mb-2">Satellites</h3>
+                        <p class="text-cyan-100 text-sm">Understand space weather effects on technology</p>
+                    </button>
+                    <div class="category-rocket hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+                        <div class="w-8 h-16 relative">
+                            <svg viewBox="0 0 30 60" class="w-full h-full">
+                                <ellipse cx="15" cy="42" rx="6" ry="12" fill="#e5e7eb"/>
+                                <path d="M9 30 L15 10 L21 30 Z" fill="#dc2626"/>
+                                <path d="M9 47 L5 55 L9 52 Z" fill="#374151"/>
+                                <path d="M21 47 L25 55 L21 52 Z" fill="#374151"/>
+                                <circle cx="15" cy="35" r="3" fill="#3b82f6"/>
+                            </svg>
+                            <div class="rocket-flame-small absolute bottom-0 left-1/2 transform -translate-x-1/2 w-3 h-4 bg-gradient-to-t from-yellow-400 to-orange-500 rounded-full opacity-0"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-center">
+                <button onclick="goBackToSpaceWeather()" 
+                    class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    ← Back to Space Weather
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Launch Control Panel (hidden by default) -->
+    <div id="launchSection" class="hidden slide-transition">
+        <div class="launch-panel max-w-lg mx-auto bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 bg-opacity-90 backdrop-blur-sm rounded-xl shadow-2xl p-12 relative z-10 border border-blue-400 border-opacity-30">
+            <!-- Mission Control Icon -->
+            <div class="text-center mb-10">
+                <div class="w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <h1 class="text-4xl font-bold text-white mb-3">Space Explorer</h1>
+                <p class="text-blue-200 text-lg">Mission Control Center</p>
+                <p class="text-blue-300 text-sm mt-2">Welcome, <span id="astronautName">Space Explorer</span>!</p>
+            </div>
+
+            <!-- Mission Status -->
+            <div class="bg-black bg-opacity-30 rounded-lg p-6 mb-8 border border-blue-500 border-opacity-30">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-blue-200 text-sm font-medium">Mission Status:</span>
+                    <span class="text-green-400 text-sm font-bold animate-pulse">● READY</span>
+                </div>
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-blue-200 text-sm font-medium">Fuel Level:</span>
+                    <div class="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
+                        <div class="w-full h-full bg-gradient-to-r from-green-400 to-blue-500 animate-pulse"></div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-blue-200 text-sm font-medium">Destination:</span>
+                    <span class="text-yellow-400 text-sm font-bold">Solar System Tour</span>
+                </div>
+            </div>
+
+            <!-- Launch Button -->
+            <button onclick="initiateLaunch()" 
+                class="launch-button w-full bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 text-white py-4 px-6 rounded-lg font-bold text-xl hover:from-red-600 hover:via-orange-600 hover:to-yellow-600 focus:ring-4 focus:ring-orange-400 focus:ring-offset-2 transition-all duration-300 shadow-lg transform hover:scale-105">
+                🚀 LAUNCH MISSION
+            </button>
+
+            <!-- Mission Info -->
+            <div class="mt-8 text-center">
+                <p class="text-blue-200 text-sm">
+                    Explore Mars, Jupiter, Saturn, Neptune, and Venus
+                </p>
+                <p class="text-blue-300 text-xs mt-2">
+                    ⭐ Estimated flight time: 2.5 light years
+                </p>
+            </div>
+
+            <!-- Launch Countdown (hidden by default) -->
+            <div id="countdown" class="hidden mt-6 text-center">
+                <div class="text-6xl font-bold text-red-400 animate-pulse" id="countdownNumber">3</div>
+                <p class="text-blue-200 text-lg mt-2">Launching in...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create twinkling stars
+        function createStars() {
+            const starsContainer = document.querySelector('.stars');
+            const numberOfStars = 150;
+            
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                // Random position
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                
+                // Random size
+                const size = Math.random() * 3 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                
+                // Random animation delay
+                star.style.animationDelay = Math.random() * 3 + 's';
+                
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // Initialize stars when page loads
+        createStars();
+
+        // Profile form submission
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // Simple validation
+            if (!data.fullName || !data.age) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            if (data.age < 1 || data.age > 120) {
+                alert('Please enter a valid age.');
+                return;
+            }
+            
+            if (!data.terms) {
+                alert('Please accept the terms and conditions.');
+                return;
+            }
+            
+            // Simulate form submission
+            const submitButton = this.querySelector('button[type="submit"]');
+            submitButton.textContent = '🚀 Creating Profile...';
+            submitButton.disabled = true;
+            
+            setTimeout(() => {
+                // Show success message
+                document.getElementById('successMessage').classList.remove('hidden');
+                
+                // Store astronaut name
+                document.getElementById('astronautName').textContent = data.fullName;
+                
+                // Transition to launch screen after 2 seconds
+                setTimeout(() => {
+                    transitionToLaunchScreen();
+                }, 2000);
+                
+                // Reset button
+                submitButton.textContent = '🚀 Create Profile';
+                submitButton.disabled = false;
+            }, 1500);
+        });
+
+        // Transition function
+        function transitionToLaunchScreen() {
+            const profileSection = document.getElementById('profileSection');
+            const launchSection = document.getElementById('launchSection');
+            const rocket = document.getElementById('animatedRocket');
+            
+            // Fade out profile section
+            profileSection.classList.add('fade-out');
+            
+            setTimeout(() => {
+                // Hide profile and show launch
+                profileSection.classList.add('hidden');
+                launchSection.classList.remove('hidden');
+                
+                // Hide the animated rocket when leaving profile page
+                rocket.style.display = 'none';
+                
+                // Fade in launch section
+                setTimeout(() => {
+                    launchSection.classList.add('fade-in');
+                }, 100);
+            }, 500);
+        }
+
+        // Launch sequence - now goes to space weather education
+        function initiateLaunch() {
+            const button = document.querySelector('.launch-button');
+            const countdown = document.getElementById('countdown');
+            const countdownNumber = document.getElementById('countdownNumber');
+            
+            // Disable button and show countdown
+            button.disabled = true;
+            button.textContent = '🚀 LAUNCHING...';
+            button.classList.add('opacity-50');
+            countdown.classList.remove('hidden');
+            
+            let count = 3;
+            const countdownInterval = setInterval(() => {
+                countdownNumber.textContent = count;
+                count--;
+                
+                if (count < 0) {
+                    clearInterval(countdownInterval);
+                    countdownNumber.textContent = 'LIFTOFF!';
+                    
+                    // Add launch effects
+                    document.body.style.animation = 'shake 0.5s ease-in-out';
+                    
+                    setTimeout(() => {
+                        // Transition to space weather education
+                        transitionToSpaceWeather();
+                        
+                        // Reset everything
+                        button.disabled = false;
+                        button.textContent = '🚀 LAUNCH MISSION';
+                        button.classList.remove('opacity-50');
+                        countdown.classList.add('hidden');
+                        document.body.style.animation = '';
+                    }, 2000);
+                }
+            }, 1000);
+        }
+
+        // Transition to space weather education
+        function transitionToSpaceWeather() {
+            const launchSection = document.getElementById('launchSection');
+            const spaceWeatherSection = document.getElementById('spaceWeatherSection');
+            
+            // Fade out launch section
+            launchSection.classList.add('fade-out');
+            
+            setTimeout(() => {
+                // Hide launch and show space weather
+                launchSection.classList.add('hidden');
+                spaceWeatherSection.classList.remove('hidden');
+                
+                // Fade in space weather section
+                setTimeout(() => {
+                    spaceWeatherSection.classList.add('fade-in');
+                }, 100);
+            }, 500);
+        }
+
+        // Go back to mission control
+        function goBackToMissionControl() {
+            const spaceWeatherSection = document.getElementById('spaceWeatherSection');
+            const launchSection = document.getElementById('launchSection');
+            
+            // Fade out space weather section
+            spaceWeatherSection.classList.add('fade-out');
+            
+            setTimeout(() => {
+                // Hide space weather and show launch
+                spaceWeatherSection.classList.add('hidden');
+                spaceWeatherSection.classList.remove('fade-in');
+                launchSection.classList.remove('hidden');
+                launchSection.classList.remove('fade-out');
+                
+                // Keep rocket hidden when going back to mission control
+                // (rocket only appears on the first profile page)
+                
+                // Fade in launch section
+                setTimeout(() => {
+                    launchSection.classList.add('fade-in');
+                }, 100);
+            }, 500);
+        }
+
+        // Continue exploration
+        function continueExploration() {
+            alert('🌟 Great job learning about space weather! More cosmic adventures coming soon! 🚀');
+        }
+
+        // Launch to categories page
+        function launchToCategories() {
+            const launchButton = document.querySelector('button[onclick="launchToCategories()"]');
+            const rocket = launchButton.querySelector('span');
+            
+            // Add launch animation to the rocket button
+            launchButton.style.animation = 'rocketLaunchUp 2s ease-out forwards';
+            
+            // Add screen shake effect
+            document.body.style.animation = 'shake 0.5s ease-in-out';
+            
+            setTimeout(() => {
+                // Transition to categories page
+                transitionToCategories();
+                
+                // Reset animations
+                launchButton.style.animation = '';
+                document.body.style.animation = '';
+            }, 2000);
+        }
+
+        // Transition to categories page
+        function transitionToCategories() {
+            const spaceWeatherSection = document.getElementById('spaceWeatherSection');
+            const categoriesSection = document.getElementById('categoriesSection');
+            
+            // Fade out space weather section
+            spaceWeatherSection.classList.add('fade-out');
+            
+            setTimeout(() => {
+                // Hide space weather and show categories
+                spaceWeatherSection.classList.add('hidden');
+                categoriesSection.classList.remove('hidden');
+                
+                // Fade in categories section
+                setTimeout(() => {
+                    categoriesSection.classList.add('fade-in');
+                }, 100);
+            }, 500);
+        }
+
+        // Go back to space weather from categories
+        function goBackToSpaceWeather() {
+            const categoriesSection = document.getElementById('categoriesSection');
+            const spaceWeatherSection = document.getElementById('spaceWeatherSection');
+            
+            // Fade out categories section
+            categoriesSection.classList.add('fade-out');
+            
+            setTimeout(() => {
+                // Hide categories and show space weather
+                categoriesSection.classList.add('hidden');
+                categoriesSection.classList.remove('fade-in');
+                spaceWeatherSection.classList.remove('hidden');
+                spaceWeatherSection.classList.remove('fade-out');
+                
+                // Fade in space weather section
+                setTimeout(() => {
+                    spaceWeatherSection.classList.add('fade-in');
+                }, 100);
+            }, 500);
+        }
+
+        // Select category with rocket animation
+        function selectCategory(category) {
+            const categoryButton = document.querySelector(`button[onclick="selectCategory('${category}')"]`);
+            const categoryContainer = categoryButton.parentElement;
+            const rocket = categoryContainer.querySelector('.category-rocket');
+            const flame = rocket.querySelector('.rocket-flame-small');
+            
+            // Show and animate the rocket
+            rocket.classList.remove('hidden');
+            flame.classList.add('ignited');
+            
+            // Add launch animation
+            setTimeout(() => {
+                rocket.style.animation = 'categoryRocketLaunch 2s ease-out forwards';
+                
+                // Add screen shake
+                document.body.style.animation = 'shake 0.5s ease-in-out';
+                
+                setTimeout(() => {
+                    // Show category content (placeholder for now)
+                    alert(`🚀 Launching ${category} mission! Content coming soon!`);
+                    
+                    // Reset rocket
+                    rocket.classList.add('hidden');
+                    rocket.style.animation = '';
+                    flame.classList.remove('ignited');
+                    document.body.style.animation = '';
+                }, 2000);
+            }, 300);
+        }
+
+        // Information system for space weather terms
+        const spaceWeatherInfo = {
+            solarFlares: {
+                title: "☀️ Solar Flares",
+                content: "Solar flares are like giant explosions on the Sun! They happen when the Sun's magnetic field lines get twisted and suddenly snap back into place, releasing huge amounts of energy.",
+                facts: "🔥 Fun Fact: A single solar flare can release as much energy as billions of hydrogen bombs! But don't worry - Earth's atmosphere and magnetic field protect us from harm."
+            },
+            solarWind: {
+                title: "💨 Solar Wind",
+                content: "Solar wind is a stream of tiny particles that the Sun constantly sends out into space. Think of it like an invisible breeze made of super tiny pieces of the Sun!",
+                facts: "🌪️ Fun Fact: Solar wind travels at about 1 million miles per hour! It takes about 4 days for solar wind to travel from the Sun to Earth."
+            },
+            magneticShield: {
+                title: "🛡️ Magnetic Shield",
+                content: "Earth has an invisible force field called a magnetosphere that protects us from space weather. It's created by our planet's magnetic field, like a giant invisible bubble around Earth!",
+                facts: "🧲 Fun Fact: Without Earth's magnetic shield, our atmosphere would slowly be blown away by solar wind, just like what happened to Mars billions of years ago!"
+            },
+            auroras: {
+                title: "✨ Auroras (Northern & Southern Lights)",
+                content: "Auroras are beautiful dancing lights in the sky! They happen when some solar particles sneak past Earth's magnetic shield and bump into gases in our atmosphere, making them glow like a natural light show.",
+                facts: "🌈 Fun Fact: Auroras can be green, purple, red, or blue depending on which gases they hit! Green is the most common color and comes from oxygen molecules."
+            }
+        };
+
+        // Show information popup
+        function showInfo(topic) {
+            const popup = document.getElementById('infoPopup');
+            const title = document.getElementById('infoTitle');
+            const content = document.getElementById('infoContent');
+            const facts = document.getElementById('infoFacts');
+            
+            const info = spaceWeatherInfo[topic];
+            
+            title.textContent = info.title;
+            content.textContent = info.content;
+            facts.textContent = info.facts;
+            
+            popup.classList.remove('hidden');
+            // Add animation
+            setTimeout(() => {
+                popup.querySelector('.bg-white').classList.remove('scale-95');
+                popup.querySelector('.bg-white').classList.add('scale-100');
+            }, 10);
+        }
+
+        // Close information popup
+        function closeInfo() {
+            const popup = document.getElementById('infoPopup');
+            popup.querySelector('.bg-white').classList.remove('scale-100');
+            popup.querySelector('.bg-white').classList.add('scale-95');
+            
+            setTimeout(() => {
+                popup.classList.add('hidden');
+            }, 300);
+        }
+
+        // Add shake animation for launch effect
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9893e10a73be17a7',t:'MTc1OTU3MjUxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
